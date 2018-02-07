@@ -1,11 +1,24 @@
 #include "Plane.h"
 
+Plane::Plane() : PhysicsObject(ShapeType::PLANE)
+, m_normal(0, 0)
+, m_distanceToOrigin(0)
+{}
 Plane::Plane(glm::vec2 normal, float distance) : PhysicsObject(ShapeType::PLANE)
 , m_normal(normal)
 , m_distanceToOrigin(distance)
 {}
 Plane::~Plane()
 {}
+
+void Plane::fixedUpdate(glm::vec2 a_gravity, float timeStep)
+{
+
+}
+void Plane::resetPosition()
+{
+
+}
 
 void Plane::makeGizmo()
 {

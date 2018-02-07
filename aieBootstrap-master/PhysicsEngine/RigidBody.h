@@ -15,12 +15,13 @@ public:
 
 	virtual bool checkCollision(PhysicsObject* pOther) = 0;
 
-	glm::vec2 getPosition() { return m_position; }
-	glm::vec2 getVelocity() { return m_velocity; }
-	glm::vec2 getForce()	{ return m_velocity * m_mass; }
-	float getRotation()		{ return m_rotation; }
-	float getMass()			{ return m_mass; }
-	bool getKinematic()		{ return m_kinematic; }
+	glm::vec2 getPosition()					{ return m_position; }
+	glm::vec2 getVelocity()					{ return m_velocity; }
+	glm::vec2 getForce()					{ return m_velocity * m_mass; }
+	float getRotation()						{ return m_rotation; }
+	float getMass()							{ return m_mass; }
+	bool getKinematic()						{ return m_kinematic; }
+	void setVelocity(glm::vec2 a_velocity)	{ m_velocity = a_velocity; }
 
 protected:
 	glm::vec2 m_position;

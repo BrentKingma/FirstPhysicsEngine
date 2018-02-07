@@ -30,16 +30,14 @@ bool PhysicsEngineApp::startup()
 
 	m_2dRenderer = new aie::Renderer2D();
 	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setTimeStep(0.5f);
-	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
-	
-	float radius = 1.0f;
-	float speed = 30;
-	glm::vec2 startPos(-40.0f, 0.0f);
-	float inclination = (float)M_PI / 4.0f;
+	m_physicsScene->setTimeStep(0.01f);
+	m_physicsScene->setGravity(glm::vec2(0.0f, 0.0f));
 
-	m_physicsScene->addActor(new Sphere(startPos, glm::vec2(sin(inclination), cos(inclination)) * speed, 1, radius, glm::vec4(1, 0, 0, 1), false));
-	setupContinuousDemo(startPos, inclination, speed, -9.8);
+	m_sphere1 = new Sphere(glm::vec2(-30.0f, 0.0f), glm::vec2(2.0f, 0.0f), 5.0f, 4.0f, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), false);
+	m_sphere2 = new Sphere(glm::vec2(30.0f, 0.0f), glm::vec2(-2.0f, 0.0f), 5.0f, 4.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
+	m_physicsScene->addActor(m_sphere1);
+	m_physicsScene->addActor(m_sphere2);
+	
 
 	// TODO: remember to change this when redistributing a build!
 	// the following path would be used instead: "./font/consolas.ttf"
@@ -56,7 +54,7 @@ void PhysicsEngineApp::shutdown() {
 
 void PhysicsEngineApp::update(float deltaTime) 
 {
-
+	aie::Gizmos::clear();
 	// input example
 	aie::Input* input = aie::Input::getInstance();
 
