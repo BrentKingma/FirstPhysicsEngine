@@ -14,7 +14,11 @@
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-x64/
+x64/*
+!x64/glwf3.lib
+!glfw3.lib
+!x64/Bootstrap.lib
+!Bootstrap.lib
 x86/
 bld/
 [Oo]bj/
