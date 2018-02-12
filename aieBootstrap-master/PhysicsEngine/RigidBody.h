@@ -1,5 +1,6 @@
 #pragma once
 #include "PhysicsObject.h"
+#include <vector>
 class RigidBody : public PhysicsObject
 {
 public:
@@ -22,6 +23,7 @@ public:
 	float getMass()							{ return m_mass; }
 	bool getKinematic()						{ return m_kinematic; }
 	void setVelocity(glm::vec2 a_velocity)	{ m_velocity = a_velocity; }
+	std::vector<glm::vec2> getVertices()	{ return m_vertices; }
 
 protected:
 	glm::vec2 m_position;
@@ -31,5 +33,7 @@ protected:
 	float m_rotation;
 	float m_mass;
 	bool m_kinematic;
+
+	std::vector<glm::vec2> m_vertices;
 };
 

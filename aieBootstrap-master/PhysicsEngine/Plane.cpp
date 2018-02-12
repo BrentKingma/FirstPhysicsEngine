@@ -17,7 +17,7 @@ void Plane::fixedUpdate(glm::vec2 a_gravity, float timeStep)
 }
 void Plane::resetPosition()
 {
-
+	
 }
 
 void Plane::makeGizmo()

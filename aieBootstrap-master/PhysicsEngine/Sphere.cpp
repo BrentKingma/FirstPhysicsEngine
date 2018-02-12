@@ -5,7 +5,12 @@ Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius,
 	: RigidBody(ShapeType::SPHERE, position, velocity, 0.0f, mass, isKinematic)
 	, m_radius(radius)
 	, m_colour(colour)
-{}
+{
+	m_vertex_1.x = m_position.x;
+	m_vertex_1.y = m_position.y;
+
+	m_vertices.push_back(m_vertex_1);
+}
 
 Sphere::~Sphere()
 {
@@ -15,6 +20,7 @@ void Sphere::makeGizmo()
 {
 	aie::Gizmos::add2DCircle(m_position, m_radius, 32, m_colour);
 }
+//Not beign used
 bool Sphere::checkCollision(PhysicsObject * pOther)
 {
 	assert(pOther != nullptr);

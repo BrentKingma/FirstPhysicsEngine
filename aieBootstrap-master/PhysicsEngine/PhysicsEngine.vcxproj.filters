@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\TypeOfShape">
+      <UniqueIdentifier>{8b7b802c-d490-47d0-9add-374e0519efd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TypeOfShape">
+      <UniqueIdentifier>{d415d710-df74-4822-bb4e-bf12ba3e3321}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhysicsEngineApp.cpp">
@@ -27,11 +33,14 @@
     <ClCompile Include="RigidBody.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Source Files\TypeOfShape</Filter>
     </ClCompile>
     <ClCompile Include="Plane.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\TypeOfShape</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Source Files\TypeOfShape</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -47,11 +56,14 @@
     <ClInclude Include="RigidBody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="AABB.h">
+      <Filter>Header Files\TypeOfShape</Filter>
     </ClInclude>
     <ClInclude Include="Plane.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\TypeOfShape</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Header Files\TypeOfShape</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 #include <vector>
 
 class PhysicsObject;
+class RigidBody;
 class PhysicsScene
 {
 public:
@@ -20,10 +21,16 @@ public:
 	void setTimeStep(const float timeStep) { m_timeStep = timeStep; }
 	float getTimeStep() const { return m_timeStep; }
 
-	static bool plane2Plane(PhysicsObject* object1, PhysicsObject* object2);
 	static bool plane2Sphere(PhysicsObject* object1, PhysicsObject* object2);
+	static bool plane2AABB(PhysicsObject* object1, PhysicsObject* object2);
 	static bool sphere2Plane(PhysicsObject* object1, PhysicsObject* object2);
 	static bool sphere2Sphere(PhysicsObject* object1, PhysicsObject* object2);
+	static bool sphere2AABB(PhysicsObject* object1, PhysicsObject* object2);
+	static bool AABB2AABB(PhysicsObject* object1, PhysicsObject* object2);
+	static bool AABB2Plane(PhysicsObject* object1, PhysicsObject* object2);
+	static bool AABB2Sphere(PhysicsObject* object1, PhysicsObject* object2);
+
+	bool SATCollision(RigidBody* object1, RigidBody* object2);
 
 	void checkForCollision();
 

@@ -6,6 +6,8 @@
 
 class PhysicsScene;
 class Sphere;
+class AABB;
+class Plane;
 
 class PhysicsEngineApp : public aie::Application 
 {
@@ -29,5 +31,6 @@ protected:
 
 	PhysicsScene*		m_physicsScene;
 	Sphere*				m_sphere1;
-	Sphere*				m_sphere2;
+	AABB*				m_sphere2;
+	Plane*				m_plane;
 };
