@@ -1,8 +1,8 @@
 #include "Sphere.h"
 #include <cmath>
 #include <algorithm>
-Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour, bool isKinematic)
-	: RigidBody(ShapeType::SPHERE, position, velocity, 0.0f, mass, isKinematic)
+Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour, bool a_isStatic)
+	: RigidBody(ShapeType::SPHERE, position, velocity, 0.0f, mass, a_isStatic)
 	, m_radius(radius)
 	, m_colour(colour)
 {

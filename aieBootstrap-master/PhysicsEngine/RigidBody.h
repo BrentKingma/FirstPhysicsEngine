@@ -5,7 +5,7 @@ class RigidBody : public PhysicsObject
 {
 public:
 	RigidBody() = delete;
-	RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, bool kinematic);
+	RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, bool a_isStatic);
 	~RigidBody();
 
 	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
@@ -21,9 +21,10 @@ public:
 	glm::vec2 getForce()					{ return m_velocity * m_mass; }
 	float getRotation()						{ return m_rotation; }
 	float getMass()							{ return m_mass; }
-	bool getKinematic()						{ return m_kinematic; }
+	bool isStatic()							{ return m_static; }
 	void setVelocity(glm::vec2 a_velocity)	{ m_velocity = a_velocity; }
 	std::vector<glm::vec2> getVertices()	{ return m_vertices; }
+	void setPosition(glm::vec2 a_pos)		{ m_position = a_pos; }
 
 protected:
 	glm::vec2 m_position;
@@ -32,7 +33,7 @@ protected:
 	glm::vec2 m_acceleration;
 	float m_rotation;
 	float m_mass;
-	bool m_kinematic;
+	bool m_static;
 
 	std::vector<glm::vec2> m_vertices;
 };

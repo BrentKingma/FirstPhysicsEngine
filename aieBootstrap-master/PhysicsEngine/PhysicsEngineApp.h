@@ -31,6 +31,6 @@ protected:
 
 	PhysicsScene*		m_physicsScene;
 	Sphere*				m_sphere1;
-	AABB*				m_sphere2;
+	Sphere*				m_sphere2;
 	Plane*				m_plane;
 };

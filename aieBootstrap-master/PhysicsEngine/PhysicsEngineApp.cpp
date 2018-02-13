@@ -33,16 +33,17 @@ bool PhysicsEngineApp::startup()
 	m_2dRenderer = new aie::Renderer2D();
 	m_physicsScene = new PhysicsScene();
 	m_physicsScene->setTimeStep(0.01f);
-	m_physicsScene->setGravity(glm::vec2(0.0f, 0.0f));
+	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 
-	//m_sphere1 = new Sphere(glm::vec2(-30.0f, 0.0f), glm::vec2(2.0f, 0.0f), 5.0f, 4.0f, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), false);
-	//m_sphere2 = new AABB(glm::vec2(0.0f, 0.0f), glm::vec2(3.0f, 2.0f), glm::vec2(-2.0f, -2.0f), 0.0f, 3.0f, false);
-	//m_plane = new Plane(glm::vec2(-1.0f, -1.0f), 0.0f);
+	m_sphere1 = new Sphere(glm::vec2(30.0f, 0.0f), glm::vec2(0.0f, -50.0f), 5.0f, 4.0f, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), false);
+	//m_sphere2 = new Sphere(glm::vec2(-30.0f, 0.0f), glm::vec2(0.0f, 0.0f), 5.0f, 4.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), true);
+	m_plane = new Plane(glm::vec2(0.0f, 1.0f), -50.0f);
 
-	//m_physicsScene->addActor(m_sphere1);
-	//m_physicsScene->addActor(m_sphere2);
-	//m_physicsScene->addActor(m_plane);
 	
+	//m_physicsScene->addActor(m_sphere2);
+	
+	m_physicsScene->addActor(m_plane);
+	m_physicsScene->addActor(m_sphere1);
 
 	// TODO: remember to change this when redistributing a build!
 	// the following path would be used instead: "./font/consolas.ttf"
