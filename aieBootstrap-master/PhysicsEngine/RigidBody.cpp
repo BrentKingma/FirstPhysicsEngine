@@ -20,10 +20,13 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
 	if (gravity != glm::vec2(0.0f, 0.0f))
 	{
-		applyForce(gravity * m_mass);
+		applyForce(gravity * m_mass, FORCEMODE::CONSTANT);
 	}
 	m_velocity += m_acceleration * timeStep;
+	m_velocity -= m_velocity * m_linearDrag * timeStep;
 	m_position += m_velocity * timeStep;
+
+	std::cout << m_velocity.x << " " << m_velocity.y << std::endl;
 
 	m_acceleration = { 0, 0 };
 }
@@ -32,15 +35,22 @@ void RigidBody::debug()
 	
 }
 
-void RigidBody::applyForce(glm::vec2 force)
+void RigidBody::applyForce(glm::vec2 force, FORCEMODE a_mode)
 {
 	if (!m_static)
 	{
-		m_velocity += force / m_mass;
+		if (a_mode == FORCEMODE::CONSTANT)
+		{
+			m_acceleration += force / m_mass;
+		}
+		else if (a_mode == FORCEMODE::IMPULSE)
+		{
+			m_velocity += force / m_mass;
+		}
 	}
 }
-void RigidBody::applyForceToActor(RigidBody * actor2, glm::vec2 force)
+void RigidBody::applyForceToActor(RigidBody * actor2, glm::vec2 force, FORCEMODE a_mode_1, FORCEMODE a_mode_2)
 {
-	applyForce(force);
-	actor2->applyForce(-force);
+	applyForce(force, a_mode_1);
+	actor2->applyForce(-force, a_mode_2);
 }
