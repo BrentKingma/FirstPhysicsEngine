@@ -92,15 +92,17 @@ void PhysicsScene::checkForCollision()
 				{
 					
 					//Checks if there is no plane involved in the collision
+					//Then seperates the two objects from each other
+					//Then resolves the collision
 					if (dynamic_cast<Plane*>(object1) == nullptr && dynamic_cast<Plane*>(object2) == nullptr)
 					{
-						resolveCollisionWithoutPlane(dynamic_cast<RigidBody*>(object1), dynamic_cast<RigidBody*>(object2));
 						seperateCollision(dynamic_cast<RigidBody*>(object1), dynamic_cast<RigidBody*>(object2), collision);
+						resolveCollision(dynamic_cast<RigidBody*>(object1), dynamic_cast<RigidBody*>(object2));
 					}
 					else
 					{
 						seperateCollision(object1, object2, collision);
-						resolveCollisionWithPlane(object1, object2);						
+						resolveCollision(object1, object2);						
 					}
 				}
 
@@ -155,24 +157,41 @@ void PhysicsScene::seperateCollision(PhysicsObject * object1, PhysicsObject * ob
 		rigid->setPosition(rigid->getPosition() - (obj1MoveRatio * collision.overlap * collision.normal));
 	}
 }
-void PhysicsScene::resolveCollisionWithoutPlane(RigidBody * object1, RigidBody * object2)
+void PhysicsScene::resolveCollision(RigidBody * object1, RigidBody * object2)
 {
-	glm::vec2 normal = collision.normal;
-	glm::vec2 relativeVelocity = object2->getVelocity() - object1->getVelocity();
+	//Perpendicular vector to the collision normal
+	glm::vec2 perp(collision.normal.y, -collision.normal.x);
 
-	float elasticity = 1.0f;
+	float r1 = glm::dot(collision.contactPoint - object1->getPosition(), -perp);
+	float r2 = glm::dot(collision.contactPoint - object2->getPosition(), perp);
 
-	float invMass1 = (!object1->isStatic()) ? 1.0f / object1->getMass() : 0.0f;
-	float invMass2 = (!object2->isStatic()) ? 1.0f / object2->getMass() : 0.0f;
-	float top = -(1 + elasticity) * glm::dot((relativeVelocity), normal);
-	float bottom = (glm::dot(normal, normal) * (invMass1 + invMass2));
-	float j = top / bottom;
+	float v1 = glm::dot(object1->getVelocity(), collision.normal) - r1 * object1->getRotation();
+	float v2 = glm::dot(object2->getVelocity(), collision.normal) + r2 * object2->getRotation();
 
-	glm::vec2 force = normal * j;
+	if (v1 > v2)
+	{
 
-	object1->applyForceToActor(object2, -force, FORCEMODE::IMPULSE, FORCEMODE::IMPULSE);
+		glm::vec2 normal = collision.normal;
+		glm::vec2 relativeVelocity = object2->getVelocity() - object1->getVelocity();
+
+		float mass1 = 1.0f / (1.0f / object1->getMass() + (r1*r1) / object1->getMoment());
+		float mass2 = 1.0f / (1.0f / object2->getMass() + (r2*r2) / object2->getMoment());
+
+		float elasticity = CalculateElasticity(object1, object2);
+
+		/*float invMass1 = (!object1->isStatic()) ? 1.0f / object1->getMass() : 0.0f;
+		float invMass2 = (!object2->isStatic()) ? 1.0f / object2->getMass() : 0.0f;
+		float top = -(1 + elasticity) * glm::dot((relativeVelocity), normal);
+		float bottom = (glm::dot(normal, normal) * (invMass1 + invMass2));
+		float j = top / bottom;*/
+
+		glm::vec2 force = (1.0f + elasticity)*mass1*mass2 / (mass1 + mass2)*(v1 - v2)*collision.normal;
+
+		object1->applyForce(force, FORCEMODE::IMPULSE, collision.contactPoint - object1->getPosition());
+		object2->applyForce(-force, FORCEMODE::IMPULSE, collision.contactPoint - object2->getPosition());
+	}
 }
-void PhysicsScene::resolveCollisionWithPlane(PhysicsObject * a_object1, PhysicsObject * a_object2)
+void PhysicsScene::resolveCollision(PhysicsObject * a_object1, PhysicsObject * a_object2)
 {
 	Plane* plane;
 	RigidBody* rigid;
@@ -187,18 +206,38 @@ void PhysicsScene::resolveCollisionWithPlane(PhysicsObject * a_object1, PhysicsO
 		rigid = (RigidBody*)a_object1;
 	}
 
+	//Perpendicular vector to the collision normal
+	glm::vec2 perp(collision.normal.y, -collision.normal.x);
+
+	float r1 = glm::dot(collision.contactPoint - rigid->getPosition(), -perp);
+	float v1 = glm::dot(rigid->getVelocity(), collision.normal) - r1 * rigid->getRotation();
+	
+	float mass1 = 1.0f / (1.0f / rigid->getMass() + (r1*r1) / rigid->getMoment());
+
 	glm::vec2 normal = plane->getNormal();
 	glm::vec2 relativeVelocity = rigid->getVelocity();
 
-	float elasticity = 1.0f;
+	float elasticity = CalculateElasticity(rigid);
 
-	float invMass = (!rigid->isStatic()) ? 1.0f / rigid->getMass() : 0.0f;
+	/*float invMass = (!rigid->isStatic()) ? 1.0f / rigid->getMass() : 0.0f;
 	float top = (-(1 + elasticity) * glm::dot((relativeVelocity), normal));
-	float j = top / invMass;
+	float j = top / invMass;*/
 
-	glm::vec2 force = normal * j;
+	glm::vec2 force = (1.0f + elasticity)*mass1 / (mass1)*(v1)*collision.normal;
 
-	rigid->applyForce(force, FORCEMODE::IMPULSE);
+	rigid->applyForce(force, FORCEMODE::IMPULSE, collision.contactPoint - rigid->getPosition());
+}
+
+float PhysicsScene::CalculateElasticity(RigidBody * object1, RigidBody * object2)
+{
+	if (object2 != nullptr)
+	{
+		return (object1->getElasticity() + object2->getElasticity()) / 2.0f;
+	}
+	else
+	{
+		return object1->getElasticity();
+	}
 }
 
 CollisionData PhysicsScene::sphere2Sphere(PhysicsObject* object1, PhysicsObject* object2)
@@ -251,7 +290,8 @@ CollisionData PhysicsScene::sphere2Plane(PhysicsObject* object1, PhysicsObject* 
 		{
 			float overlap = -intersection;
 			glm::vec2 normal = plane->getNormal();
-			return CollisionData(true, overlap, normal);			
+			glm::vec2 contactPoint = sphere->getPosition() + (normal * -sphere->getRadius());
+			return CollisionData(true, overlap, normal, contactPoint);			
 		}
 	}
 	return CollisionData(false);
@@ -261,60 +301,34 @@ CollisionData PhysicsScene::sphere2AABB(PhysicsObject* object1, PhysicsObject* o
 	Sphere* sphere =	dynamic_cast<Sphere*>(object1);
 	AABB* aabb =		dynamic_cast<AABB*>(object2);
 
-	// Get the center of the sphere relative to the center of the box
-	glm::vec2 sphereCenterRelBox = sphere->getPosition() - aabb->getPosition();
-	// Point on surface of box that is closest to the center of the sphere
-	glm::vec2 boxPoint;
+	glm::vec2 vecBetween = sphere->getPosition() - aabb->getPosition();
 
-	// Check sphere center against box along the X axis alone. 
-	// If the sphere is off past the left edge of the box, 
-	// then the left edge is closest to the sphere. 
-	// Similar if it's past the right edge. If it's between 
-	// the left and right edges, then the sphere's own X 
-	// is closest, because that makes the X distance 0, 
-	// and you can't get much closer than that :)
+	glm::vec2 offset;
 
-	if (sphereCenterRelBox.x < -aabb->GetWidth())
+	offset.x = glm::dot(vecBetween, { 1,0 });
+	offset.y = glm::dot(vecBetween, { 0,1 });
+
+	if (glm::abs(offset.x) > aabb->GetExtends().x)
 	{
-		boxPoint.x = -aabb->GetWidth();
+		(offset.x > 0) ? offset.x = aabb->getPosition().x + aabb->GetExtends().x : offset.x = aabb->getPosition().x - aabb->GetExtends().x;
 	}
-	else if (sphereCenterRelBox.x > aabb->GetWidth())
+	if (glm::abs(offset.y) > aabb->GetExtends().y)
 	{
-		boxPoint.x = aabb->GetWidth();
-	}
-	else
-	{
-		boxPoint.x = sphereCenterRelBox.x;
+		(offset.y > 0) ? offset.y = aabb->getPosition().y + aabb->GetExtends().y : offset.y = aabb->getPosition().y - aabb->GetExtends().y;
 	}
 
-	// ...same for Y axis
-	if (sphereCenterRelBox.y < -aabb->GetHeight())
-	{
-		boxPoint.y = -aabb->GetHeight();
-	}		
-	else if (sphereCenterRelBox.y > aabb->GetHeight())
-	{
-		boxPoint.y = aabb->GetHeight();
-	}
-	else
-	{
-		boxPoint.y = sphereCenterRelBox.y;
-	}
-	// Now we have the closest point on the box, so get the distance from 
-	// that to the sphere center, and see if it's less than the radius
+	offset += aabb->getPosition();
 
-	glm::vec2 dist = sphereCenterRelBox - boxPoint;
+	glm::vec2 vecBetweenClamp = sphere->getPosition() - offset;
 
-	if (dist.x*dist.x + dist.y*dist.y < sphere->getRadius()*sphere->getRadius())
+	if (glm::distance(sphere->getPosition(), offset) < sphere->getRadius())
 	{
-		float overlap = (dist.x*dist.x + dist.y*dist.y) - (sphere->getRadius()*sphere->getRadius());
+		float overlap = glm::distance(sphere->getPosition(), offset) - sphere->getRadius();
 		glm::vec2 normal = glm::normalize(aabb->getPosition() - sphere->getPosition());
 		return CollisionData(true, overlap, normal);
 	}
-	else
-	{
-		return CollisionData(false);
-	}
+	return CollisionData(false);
+	
 }
 CollisionData PhysicsScene::plane2Sphere(PhysicsObject* object1, PhysicsObject* object2)
 {

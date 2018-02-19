@@ -1,8 +1,8 @@
 #include "Sphere.h"
 #include <cmath>
 #include <algorithm>
-Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour, bool a_isStatic)
-	: RigidBody(ShapeType::SPHERE, position, velocity, 0.0f, mass, a_isStatic)
+Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, float a_elasticity, glm::vec4 colour, bool a_isStatic, float a_linearDrag, float a_angularDrag)
+	: RigidBody(ShapeType::SPHERE, position, velocity, 0.0f, mass, a_elasticity, a_isStatic, a_linearDrag, a_angularDrag)
 	, m_radius(radius)
 	, m_colour(colour)
 {
@@ -10,6 +10,8 @@ Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius,
 	m_vertex_1.y = m_position.y;
 
 	m_vertices.push_back(m_vertex_1);
+
+	m_moment = 0.5f * m_mass * m_radius * m_radius;
 }
 
 Sphere::~Sphere()

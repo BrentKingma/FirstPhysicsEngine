@@ -2,8 +2,8 @@
 
 
 
-AABB::AABB(glm::vec2 a_center, glm::vec2 a_extends, glm::vec2 a_velocity, float a_rotation, float a_mass, bool a_isStatic)
-	: RigidBody(ShapeType::BOX, a_center, a_velocity, a_rotation, a_mass, a_isStatic)
+AABB::AABB(glm::vec2 a_center, glm::vec2 a_extends, glm::vec2 a_velocity, float a_rotation, float a_mass, float a_elasticity, bool a_isStatic)
+	: RigidBody(ShapeType::BOX, a_center, a_velocity, a_rotation, a_mass, a_elasticity, a_isStatic)
 {
 	m_extends = a_extends;
 	m_topRight =	glm::vec2(a_center.x + a_extends.x, a_center.y + a_extends.y);
@@ -24,7 +24,9 @@ AABB::AABB(glm::vec2 a_center, glm::vec2 a_extends, glm::vec2 a_velocity, float 
 	m_vertices.push_back(m_Point_1);
 	m_vertices.push_back(m_Point_2);
 	m_vertices.push_back(m_Point_3);
-	m_vertices.push_back(m_Point_4);	
+	m_vertices.push_back(m_Point_4);
+
+	m_moment = 1.0f / 12.0f * m_mass * m_extends.x * m_extends.y;
 }
 
 

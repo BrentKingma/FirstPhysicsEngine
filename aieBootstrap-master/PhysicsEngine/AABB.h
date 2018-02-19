@@ -4,7 +4,7 @@
 class AABB : public RigidBody
 {
 public:
-	AABB(glm::vec2 a_center, glm::vec2 a_extends, glm::vec2 a_velocity, float a_rotation, float a_mass, bool a_isStatic);
+	AABB(glm::vec2 a_center, glm::vec2 a_extends, glm::vec2 a_velocity, float a_rotation, float a_mass, float a_elasticity, bool a_isStatic);
 	~AABB();
 
 	virtual void makeGizmo();

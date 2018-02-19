@@ -11,20 +11,24 @@ struct CollisionData
 		:collision(false)
 		,overlap(0.0f)
 		,normal(glm::vec2(0.0f, 0.0f))
+		,contactPoint(glm::vec2(0.0f, 0.0f))
 	{}
-	CollisionData(bool a_collision, float a_overlap, glm::vec2 a_normal)
+	CollisionData(bool a_collision, float a_overlap, glm::vec2 a_normal, glm::vec2 a_contactPoint = { 0.0f, 0.0f })
 		:collision(a_collision)
 		,overlap(a_overlap)
 		,normal(a_normal)
+		,contactPoint(a_contactPoint)
 	{}
 	CollisionData(bool a_collision)
 		:collision(a_collision)
 		,overlap(0.0f)
 		,normal(glm::vec2(0.0f, 0.0f))
+		, contactPoint(glm::vec2(0.0f, 0.0f))
 	{}
 	bool collision;
 	float overlap;
 	glm::vec2 normal;
+	glm::vec2 contactPoint;
 };
 
 class PhysicsScene
@@ -58,8 +62,10 @@ public:
 	void checkForCollision();
 	void seperateCollision(RigidBody* object1, RigidBody* object2, CollisionData collision);
 	void seperateCollision(PhysicsObject* object1, PhysicsObject* object2, CollisionData collision);
-	void resolveCollisionWithoutPlane(RigidBody* object1, RigidBody* object2);
-	void resolveCollisionWithPlane(PhysicsObject* object1, PhysicsObject* object2);
+	void resolveCollision(RigidBody* object1, RigidBody* object2);
+	void resolveCollision(PhysicsObject* object1, PhysicsObject* object2);
+
+	float CalculateElasticity(RigidBody* object1, RigidBody* object2 = nullptr);
 
 protected:
 	glm::vec2 m_gravity;
