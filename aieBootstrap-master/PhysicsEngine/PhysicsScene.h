@@ -58,8 +58,8 @@ public:
 	void checkForCollision();
 	void seperateCollision(RigidBody* object1, RigidBody* object2, CollisionData collision);
 	void seperateCollision(PhysicsObject* object1, PhysicsObject* object2, CollisionData collision);
-	void resolveCollisionWithoutPlane(RigidBody* object1, RigidBody* object2);
-	void resolveCollisionWithPlane(PhysicsObject* object1, PhysicsObject* object2);
+	void resolveCollision(RigidBody* object1, RigidBody* object2);
+	void resolveCollision(PhysicsObject* object1, PhysicsObject* object2);
 
 protected:
 	glm::vec2 m_gravity;

@@ -10,7 +10,9 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 ,	m_rotation(rotation)
 ,	m_originalPosition(position)
 ,	m_static(a_isStatic)
-{}
+{
+	m_linearDrag = 1.0f;
+}
 RigidBody::~RigidBody()
 {
 	delete this;
@@ -25,8 +27,6 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 	m_velocity += m_acceleration * timeStep;
 	m_velocity -= m_velocity * m_linearDrag * timeStep;
 	m_position += m_velocity * timeStep;
-
-	std::cout << m_velocity.x << " " << m_velocity.y << std::endl;
 
 	m_acceleration = { 0, 0 };
 }

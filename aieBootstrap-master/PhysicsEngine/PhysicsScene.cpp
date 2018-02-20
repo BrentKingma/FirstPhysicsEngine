@@ -89,18 +89,17 @@ void PhysicsScene::checkForCollision()
 			{
 				collision = collisionFunctionPtr(object1, object2);
 				if (collision.collision)
-				{
-					
+				{					
 					//Checks if there is no plane involved in the collision
 					if (dynamic_cast<Plane*>(object1) == nullptr && dynamic_cast<Plane*>(object2) == nullptr)
 					{
-						resolveCollisionWithoutPlane(dynamic_cast<RigidBody*>(object1), dynamic_cast<RigidBody*>(object2));
 						seperateCollision(dynamic_cast<RigidBody*>(object1), dynamic_cast<RigidBody*>(object2), collision);
+						resolveCollision(dynamic_cast<RigidBody*>(object1), dynamic_cast<RigidBody*>(object2));
 					}
 					else
 					{
 						seperateCollision(object1, object2, collision);
-						resolveCollisionWithPlane(object1, object2);						
+						resolveCollision(object1, object2);						
 					}
 				}
 
@@ -155,7 +154,7 @@ void PhysicsScene::seperateCollision(PhysicsObject * object1, PhysicsObject * ob
 		rigid->setPosition(rigid->getPosition() - (obj1MoveRatio * collision.overlap * collision.normal));
 	}
 }
-void PhysicsScene::resolveCollisionWithoutPlane(RigidBody * object1, RigidBody * object2)
+void PhysicsScene::resolveCollision(RigidBody * object1, RigidBody * object2)
 {
 	glm::vec2 normal = collision.normal;
 	glm::vec2 relativeVelocity = object2->getVelocity() - object1->getVelocity();
@@ -172,7 +171,7 @@ void PhysicsScene::resolveCollisionWithoutPlane(RigidBody * object1, RigidBody *
 
 	object1->applyForceToActor(object2, -force, FORCEMODE::IMPULSE, FORCEMODE::IMPULSE);
 }
-void PhysicsScene::resolveCollisionWithPlane(PhysicsObject * a_object1, PhysicsObject * a_object2)
+void PhysicsScene::resolveCollision(PhysicsObject * a_object1, PhysicsObject * a_object2)
 {
 	Plane* plane;
 	RigidBody* rigid;
@@ -211,18 +210,20 @@ CollisionData PhysicsScene::sphere2Sphere(PhysicsObject* object1, PhysicsObject*
 		float radius = sphere1->getRadius() + sphere2->getRadius();
 		radius *= radius;
 
+		//Gets both spheres x and y position
 		float sphere1X = sphere1->getPosition().x;
 		float sphere1Y = sphere1->getPosition().y;
 		float sphere2X = sphere2->getPosition().x;
 		float sphere2Y = sphere2->getPosition().y;
 
+		//Squares the distances between each spheres x and y because it is less resource intensive
 		float xSqaured = (sphere2X - sphere1X)*(sphere2X - sphere1X);
 		float ySquared = (sphere2Y - sphere1Y)*(sphere2Y - sphere1Y);
 
 		if ((xSqaured + ySquared) < radius)
 		{		
-			float overlap = radius - (xSqaured + ySquared);
-			overlap = sqrtf(overlap);
+			glm::vec2 vecBetween = sphere1->getPosition() - sphere2->getPosition();
+			float overlap = (sphere1->getRadius() + sphere2->getRadius()) - glm::length(vecBetween);
 			glm::vec2 normal = glm::normalize(sphere2->getPosition() - sphere1->getPosition());		
 			return CollisionData(true, overlap, normal);
 		}
@@ -234,6 +235,7 @@ CollisionData PhysicsScene::sphere2Plane(PhysicsObject* object1, PhysicsObject* 
 	Sphere* sphere = dynamic_cast<Sphere*>(object1);
 	Plane* plane = dynamic_cast<Plane*>(object2);
 
+	//If both casted succesfully we continue
 	if (sphere != nullptr && plane != nullptr)
 	{
 		glm::vec2 collisionNormal = plane->getNormal();
@@ -258,71 +260,109 @@ CollisionData PhysicsScene::sphere2Plane(PhysicsObject* object1, PhysicsObject* 
 }
 CollisionData PhysicsScene::sphere2AABB(PhysicsObject* object1, PhysicsObject* object2)
 {
-	Sphere* sphere =	dynamic_cast<Sphere*>(object1);
-	AABB* aabb =		dynamic_cast<AABB*>(object2);
+	Sphere* sphere;
+	AABB* aabb;
+	//0: Negate overlap		1: overlap
+	//0: Sphere to AABB		1: AABB to Sphere
+	int type;
 
-	// Get the center of the sphere relative to the center of the box
-	glm::vec2 sphereCenterRelBox = sphere->getPosition() - aabb->getPosition();
-	// Point on surface of box that is closest to the center of the sphere
-	glm::vec2 boxPoint;
-
-	// Check sphere center against box along the X axis alone. 
-	// If the sphere is off past the left edge of the box, 
-	// then the left edge is closest to the sphere. 
-	// Similar if it's past the right edge. If it's between 
-	// the left and right edges, then the sphere's own X 
-	// is closest, because that makes the X distance 0, 
-	// and you can't get much closer than that :)
-
-	if (sphereCenterRelBox.x < -aabb->GetWidth())
+	//Checks and does succesful casting and type checking for weather it is sphere to aabb or aabb to sphere
+	if (dynamic_cast<Sphere*>(object1) != nullptr)
 	{
-		boxPoint.x = -aabb->GetWidth();
-	}
-	else if (sphereCenterRelBox.x > aabb->GetWidth())
-	{
-		boxPoint.x = aabb->GetWidth();
+		sphere = dynamic_cast<Sphere*>(object1);
+		aabb = dynamic_cast<AABB*>(object2);
+		type = 0;
 	}
 	else
 	{
-		boxPoint.x = sphereCenterRelBox.x;
+		sphere = dynamic_cast<Sphere*>(object2);
+		aabb = dynamic_cast<AABB*>(object1);
+		type = 1;
+	}
+	//Gets the vector between the 2 positions
+	glm::vec2 vecBetween = sphere->getPosition() - aabb->getPosition();
+	//It is the clamped point to the AABB
+	glm::vec2 offset;
+
+	//Clamps the point to the axis's
+	offset.x = glm::dot(vecBetween, { 1,0 });
+	offset.y = glm::dot(vecBetween, { 0,1 });
+
+	if (glm::abs(offset.x) > (aabb->GetExtends().x * 0.5f))
+	{
+		offset.x = (aabb->GetExtends().x) * ((offset.x > 0) ? 1.0 : -1.0f);
+	}
+	if (glm::abs(offset.y) > aabb->GetExtends().y * 0.5f)
+	{
+		offset.y = (aabb->GetExtends().y) * ((offset.y > 0) ? 1.0 : -1.0f);
 	}
 
-	// ...same for Y axis
-	if (sphereCenterRelBox.y < -aabb->GetHeight())
-	{
-		boxPoint.y = -aabb->GetHeight();
-	}		
-	else if (sphereCenterRelBox.y > aabb->GetHeight())
-	{
-		boxPoint.y = aabb->GetHeight();
-	}
-	else
-	{
-		boxPoint.y = sphereCenterRelBox.y;
-	}
-	// Now we have the closest point on the box, so get the distance from 
-	// that to the sphere center, and see if it's less than the radius
+	offset += aabb->getPosition();
 
-	glm::vec2 dist = sphereCenterRelBox - boxPoint;
+	glm::vec2 vecBetweenClamp = offset - sphere->getPosition();
 
-	if (dist.x*dist.x + dist.y*dist.y < sphere->getRadius()*sphere->getRadius())
+	if (glm::length(vecBetweenClamp) < sphere->getRadius())
 	{
-		float overlap = (dist.x*dist.x + dist.y*dist.y) - (sphere->getRadius()*sphere->getRadius());
-		glm::vec2 normal = glm::normalize(aabb->getPosition() - sphere->getPosition());
+		float overlap;
+		//Checks weather you need to negate the overlap
+		if (type == 0)	{	overlap = -(glm::length(vecBetweenClamp) - sphere->getRadius());	}
+		else			{	overlap = (glm::length(vecBetweenClamp) - sphere->getRadius());		}
+
+		glm::vec2 normal = glm::normalize(vecBetweenClamp);;
 		return CollisionData(true, overlap, normal);
 	}
-	else
-	{
-		return CollisionData(false);
-	}
+	return CollisionData(false);
 }
 CollisionData PhysicsScene::plane2Sphere(PhysicsObject* object1, PhysicsObject* object2)
 {
 	return sphere2Plane(object2, object1);
 }
-/*Finish up*/CollisionData PhysicsScene::plane2AABB(PhysicsObject* object1, PhysicsObject* object2)
+CollisionData PhysicsScene::plane2AABB(PhysicsObject* object1, PhysicsObject* object2)
 {
-	return false;
+	AABB* aabb;
+	Plane* plane;
+	if (dynamic_cast<Plane*>(object1) != nullptr)
+	{
+		plane = dynamic_cast<Plane*>(object1);
+		aabb = dynamic_cast<AABB*>(object2);
+	}
+	else
+	{
+		plane = dynamic_cast<Plane*>(object2);
+		aabb = dynamic_cast<AABB*>(object1);
+	}
+
+	float tlCornerDistance = glm::dot({ (aabb->getPosition().x - aabb->GetExtends().x),(aabb->getPosition().y + aabb->GetExtends().y) }, plane->getNormal()) - plane->getDistance();
+	float trCornerDistance = glm::dot({ (aabb->getPosition().x + aabb->GetExtends().x),(aabb->getPosition().y + aabb->GetExtends().y) }, plane->getNormal()) - plane->getDistance();
+	float blCornerDistance = glm::dot({ (aabb->getPosition().x - aabb->GetExtends().x),(aabb->getPosition().y - aabb->GetExtends().y) }, plane->getNormal()) - plane->getDistance();
+	float brCornerDistance = glm::dot({ (aabb->getPosition().x + aabb->GetExtends().x),(aabb->getPosition().y - aabb->GetExtends().y) }, plane->getNormal()) - plane->getDistance();
+
+	if (tlCornerDistance < 0.0f)
+	{
+		//Top left corner is crossing
+		float overlap = tlCornerDistance;
+		return CollisionData(true, overlap, plane->getNormal());
+	}
+	else if (trCornerDistance < 0.0f)
+	{
+		//Top right corner is crossing
+		float overlap = trCornerDistance;
+		return CollisionData(true, overlap, plane->getNormal());
+	}
+	else if (blCornerDistance < 0.0f)
+	{
+		//Bottom left corner is crossing
+		float overlap = blCornerDistance;
+		return CollisionData(true, overlap, plane->getNormal());
+	}
+	else if (brCornerDistance < 0.0f)
+	{
+		//Bottom right corner is crossing
+		float overlap = brCornerDistance;
+		return CollisionData(true, overlap, plane->getNormal());
+	}
+
+	return CollisionData(false);
 }
 CollisionData PhysicsScene::AABB2AABB(PhysicsObject* object1, PhysicsObject* object2)
 {
@@ -336,69 +376,13 @@ CollisionData PhysicsScene::AABB2AABB(PhysicsObject* object1, PhysicsObject* obj
 	glm::vec2 normal = glm::normalize(aabb2->getPosition() - aabb1->getPosition());	
 	return CollisionData(true, intersection, normal);
 }
-/*Finish up*/CollisionData PhysicsScene::AABB2Plane(PhysicsObject* object1, PhysicsObject* object2)
+CollisionData PhysicsScene::AABB2Plane(PhysicsObject* object1, PhysicsObject* object2)
 {
-	return false;
+	return plane2AABB(object2, object1);
 }
 CollisionData PhysicsScene::AABB2Sphere(PhysicsObject* object1, PhysicsObject* object2)
 {
-	Sphere* sphere = dynamic_cast<Sphere*>(object2);
-	AABB* aabb = dynamic_cast<AABB*>(object1);
-
-	// Get the center of the sphere relative to the center of the box
-	glm::vec2 sphereCenterRelBox = sphere->getPosition() - aabb->getPosition();
-	// Point on surface of box that is closest to the center of the sphere
-	glm::vec2 boxPoint;
-
-	// Check sphere center against box along the X axis alone. 
-	// If the sphere is off past the left edge of the box, 
-	// then the left edge is closest to the sphere. 
-	// Similar if it's past the right edge. If it's between 
-	// the left and right edges, then the sphere's own X 
-	// is closest, because that makes the X distance 0, 
-	// and you can't get much closer than that :)
-
-	if (sphereCenterRelBox.x < -aabb->GetWidth())
-	{
-		boxPoint.x = -aabb->GetWidth();
-	}
-	else if (sphereCenterRelBox.x > aabb->GetWidth())
-	{
-		boxPoint.x = aabb->GetWidth();
-	}
-	else
-	{
-		boxPoint.x = sphereCenterRelBox.x;
-	}
-
-	// ...same for Y axis
-	if (sphereCenterRelBox.y < -aabb->GetHeight())
-	{
-		boxPoint.y = -aabb->GetHeight();
-	}
-	else if (sphereCenterRelBox.y > aabb->GetHeight())
-	{
-		boxPoint.y = aabb->GetHeight();
-	}
-	else
-	{
-		boxPoint.y = sphereCenterRelBox.y;
-	}
-	// Now we have the closest point on the box, so get the distance from 
-	// that to the sphere center, and see if it's less than the radius
-
-	glm::vec2 dist = sphereCenterRelBox - boxPoint;
-
-	if (dist.x*dist.x + dist.y*dist.y < sphere->getRadius()*sphere->getRadius())
-	{
-		float overlap = sqrtf((dist.x*dist.x + dist.y*dist.y)) - sphere->getRadius();
-		glm::vec2 normal = glm::normalize(aabb->getPosition() - sphere->getPosition());
-		return CollisionData(true, overlap, normal);
-	}
-	else
-	{
-		return CollisionData(false);
-	}
+	return sphere2AABB(object1, object2);
 }
 
 bool PhysicsScene::SATCollision(RigidBody * object1, RigidBody * object2)

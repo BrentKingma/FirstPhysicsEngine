@@ -30,7 +30,7 @@ protected:
 	aie::Font*			m_font;
 
 	PhysicsScene*		m_physicsScene;
-	Sphere*				m_sphere1;
+	AABB*				m_sphere1;
 	AABB*				m_sphere2;
 	Plane*				m_plane;
 };
