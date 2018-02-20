@@ -214,7 +214,7 @@ void PhysicsScene::resolveCollision(PhysicsObject * a_object1, PhysicsObject * a
 	
 	float mass1 = 1.0f / (1.0f / rigid->getMass() + (r1*r1) / rigid->getMoment());
 
-	glm::vec2 normal = plane->getNormal();
+	glm::vec2 normal = collision.normal;
 	glm::vec2 relativeVelocity = rigid->getVelocity();
 
 	float elasticity = CalculateElasticity(rigid);
@@ -336,7 +336,50 @@ CollisionData PhysicsScene::plane2Sphere(PhysicsObject* object1, PhysicsObject* 
 }
 /*Finish up*/CollisionData PhysicsScene::plane2AABB(PhysicsObject* object1, PhysicsObject* object2)
 {
-	return false;
+	AABB* aabb;
+	Plane* plane;
+	if (dynamic_cast<Plane*>(object1) != nullptr)
+	{
+		plane = dynamic_cast<Plane*>(object1);
+		aabb = dynamic_cast<AABB*>(object2);
+	}
+	else
+	{
+		plane = dynamic_cast<Plane*>(object2);
+		aabb = dynamic_cast<AABB*>(object1);
+	}
+
+	float tlCornerDistance = glm::dot({ (aabb->getPosition().x - aabb->GetExtends().x),(aabb->getPosition().y + aabb->GetExtends().y) }, plane->getNormal()) - plane->getDistance();
+	float trCornerDistance = glm::dot({ (aabb->getPosition().x + aabb->GetExtends().x),(aabb->getPosition().y + aabb->GetExtends().y) }, plane->getNormal()) - plane->getDistance();
+	float blCornerDistance = glm::dot({ (aabb->getPosition().x - aabb->GetExtends().x),(aabb->getPosition().y - aabb->GetExtends().y) }, plane->getNormal()) - plane->getDistance();
+	float brCornerDistance = glm::dot({ (aabb->getPosition().x + aabb->GetExtends().x),(aabb->getPosition().y - aabb->GetExtends().y) }, plane->getNormal()) - plane->getDistance();
+
+	if (tlCornerDistance < 0.0f)
+	{
+		//Top left corner is crossing
+		float overlap = tlCornerDistance;
+		return CollisionData(true, overlap, plane->getNormal());
+	}
+	else if (trCornerDistance < 0.0f)
+	{
+		//Top right corner is crossing
+		float overlap = trCornerDistance;
+		return CollisionData(true, overlap, plane->getNormal());
+	}
+	else if (blCornerDistance < 0.0f)
+	{
+		//Bottom left corner is crossing
+		float overlap = blCornerDistance;
+		return CollisionData(true, overlap, plane->getNormal());
+	}
+	else if (brCornerDistance < 0.0f)
+	{
+		//Bottom right corner is crossing
+		float overlap = brCornerDistance;
+		return CollisionData(true, overlap, plane->getNormal());
+	}
+
+	return CollisionData(false);
 }
 CollisionData PhysicsScene::AABB2AABB(PhysicsObject* object1, PhysicsObject* object2)
 {

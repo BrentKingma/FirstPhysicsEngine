@@ -12,6 +12,8 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 ,	m_static(a_isStatic)
 ,	m_elasticity(a_elasticity)
 {
+	m_linearDrag = 0.0f;
+	m_angularDrag = 0.0f;
 	m_angularVelocity = 0.0f;
 }
 RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, float a_elasticity, bool a_isStatic, float a_linearDrag, float a_angularDrag)
