@@ -26,11 +26,16 @@ public:
 	glm::vec2 getPosition()					{ return m_position; }
 	glm::vec2 getVelocity()					{ return m_velocity; }
 	glm::vec2 getForce()					{ return m_velocity * m_mass; }
+	glm::vec2 getAngularVelocity()			{ return m_angularVelocity; }
+
 	float getRotation()						{ return m_rotation; }
 	float getMass()							{ return m_mass; }
+
 	bool isStatic()							{ return m_static; }
-	void setVelocity(glm::vec2 a_velocity)	{ m_velocity = a_velocity; }
+	
 	std::vector<glm::vec2> getVertices()	{ return m_vertices; }
+
+	void setVelocity(glm::vec2 a_velocity)  { m_velocity = a_velocity; }
 	void setPosition(glm::vec2 a_pos)		{ m_position = a_pos; }
 	void addVelocity(glm::vec2 a_velocity)	{ m_velocity += a_velocity; }
 	void setForcemode(FORCEMODE a_mode)		{ forcemode = a_mode; }
@@ -40,12 +45,16 @@ protected:
 	glm::vec2 m_originalPosition;
 	glm::vec2 m_velocity;
 	glm::vec2 m_acceleration;
+	glm::vec2 m_angularVelocity;
+
 	float m_rotation;
 	float m_mass;
-	bool m_static;
-	FORCEMODE forcemode;
 	float m_linearDrag;
 	float m_angularDrag;
+
+	bool m_static;
+
+	FORCEMODE forcemode;	
 
 	std::vector<glm::vec2> m_vertices;
 };

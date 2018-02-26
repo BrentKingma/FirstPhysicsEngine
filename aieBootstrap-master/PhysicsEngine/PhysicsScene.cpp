@@ -369,12 +369,38 @@ CollisionData PhysicsScene::AABB2AABB(PhysicsObject* object1, PhysicsObject* obj
 	AABB* aabb1 = dynamic_cast<AABB*>(object1);
 	AABB* aabb2 = dynamic_cast<AABB*>(object2);
 
-	if ((aabb1->getPosition().x - aabb2->getPosition().x) > (aabb1->GetExtends().x + aabb2->GetExtends().x)) return CollisionData(false);
-	if ((aabb1->getPosition().y - aabb2->getPosition().y) > (aabb1->GetExtends().y + aabb2->GetExtends().y)) return CollisionData(false);
-	
-	float intersection = (aabb2->getPosition().x - aabb1->getPosition().x) + (aabb2->getPosition().y - aabb1->getPosition().y);
-	glm::vec2 normal = glm::normalize(aabb2->getPosition() - aabb1->getPosition());	
-	return CollisionData(true, intersection, normal);
+	if (std::abs(aabb1->getPosition().x - aabb2->getPosition().x) > (aabb1->GetExtends().x + aabb2->GetExtends().x)) return CollisionData(false);
+	if (std::abs(aabb1->getPosition().y - aabb2->getPosition().y) > (aabb1->GetExtends().y + aabb2->GetExtends().y)) return CollisionData(false);
+
+	glm::vec2 xOverlap1 = { aabb1->GetTopRight().x - aabb2->GetBottomLeft().x, 0.0f };
+	glm::vec2 xOverlap2 = { aabb1->GetBottomLeft().x - aabb2->GetTopRight().x, 0.0f };
+
+	glm::vec2 yOverlap1 = { 0.0f , aabb1->GetTopRight().y - aabb2->GetBottomLeft().y };
+	glm::vec2 yOverlap2 = { 0.0f , aabb1->GetBottomLeft().y - aabb2->GetTopRight().y };
+
+
+	float lowestDist = abs(xOverlap1.x);
+	glm::vec2 lowestVec = xOverlap1;
+
+	if (abs(xOverlap2.x) < lowestDist)
+	{
+		lowestDist = abs(xOverlap2.x);
+		lowestVec = xOverlap2;
+	}
+
+	if (abs(yOverlap1.y) < lowestDist)
+	{
+		lowestDist = abs(yOverlap1.y);
+		lowestVec = yOverlap1;
+	}
+
+	if (abs(yOverlap2.y) < lowestDist)
+	{
+		lowestDist = abs(yOverlap2.y);
+		lowestVec = yOverlap2;
+	}
+
+	return CollisionData(true, lowestDist, glm::normalize(lowestVec));
 }
 CollisionData PhysicsScene::AABB2Plane(PhysicsObject* object1, PhysicsObject* object2)
 {

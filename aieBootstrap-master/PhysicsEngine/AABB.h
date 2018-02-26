@@ -11,11 +11,11 @@ public:
 	virtual bool checkCollision(PhysicsObject* pOther);	
 
 #pragma region Getters
-	glm::vec2 GetExtends() { return m_extends; }
-	glm::vec2 GetTopRight() { return m_topRight; }
-	glm::vec2 GetBottomLeft() { return m_bottomLeft; }
-	float GetWidth() { return m_extends.x; }
-	float GetHeight() { return m_extends.y; }
+	glm::vec2 GetExtends()		{ return m_extends; }
+	glm::vec2 GetTopRight()		{ return { m_position.x + m_extends.x, m_position.y + m_extends.y }; }
+	glm::vec2 GetBottomLeft()	{ return { m_position.x - m_extends.x, m_position.y - m_extends.y }; }
+	float GetWidth()			{ return m_extends.x; }
+	float GetHeight()			{ return m_extends.y; }
 
 	std::vector<glm::vec2> GetPointList() { return m_PointList; }
 #pragma endregion
