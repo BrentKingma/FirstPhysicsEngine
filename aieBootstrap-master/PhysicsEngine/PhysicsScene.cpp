@@ -89,7 +89,8 @@ void PhysicsScene::checkForCollision()
 			{
 				collision = collisionFunctionPtr(object1, object2);
 				if (collision.collision)
-				{					
+				{			
+					
 					//Checks if there is no plane involved in the collision
 					if (dynamic_cast<Plane*>(object1) == nullptr && dynamic_cast<Plane*>(object2) == nullptr)
 					{
@@ -157,19 +158,38 @@ void PhysicsScene::seperateCollision(PhysicsObject * object1, PhysicsObject * ob
 void PhysicsScene::resolveCollision(RigidBody * object1, RigidBody * object2)
 {
 	glm::vec2 normal = collision.normal;
-	glm::vec2 relativeVelocity = object2->getVelocity() - object1->getVelocity();
+	//glm::vec2 relativeVelocity = object2->getVelocity() - object1->getVelocity();
 
-	float elasticity = 1.0f;
+	glm::vec2 perp(normal.y, -normal.x);
 
-	float invMass1 = (!object1->isStatic()) ? 1.0f / object1->getMass() : 0.0f;
+	float r1 = glm::dot(collision.contact - object1->getPosition(), -perp);
+	float r2 = glm::dot(collision.contact - object2->getPosition(), perp);
+
+	float v1 = glm::dot(object1->getVelocity(), normal) - r1 * object1->getRotation();
+	float v2 = glm::dot(object2->getVelocity(), normal) + r2 * object2->getRotation();
+
+	if (v1 > v2)
+	{
+		float elasticity = (object1->getElasticity() + object2->getElasticity()) / 2.0f;
+
+		float mass1 = 1.0f / (1.0f / object1->getMass() + (r1*r1) / object1->getMoment());
+		float mass2 = 1.0f / (1.0f / object2->getMass() + (r2*r2) / object2->getMoment());
+
+		glm::vec2 force = (1.0f + elasticity) * mass1 * mass2 / (mass1 + mass2) * (v1 - v2) * normal;
+
+		object1->applyLinearForce(-force, FORCEMODE::IMPULSE);
+		object2->applyLinearForce(force, FORCEMODE::IMPULSE);
+	}
+
+	/*float invMass1 = (!object1->isStatic()) ? 1.0f / object1->getMass() : 0.0f;
 	float invMass2 = (!object2->isStatic()) ? 1.0f / object2->getMass() : 0.0f;
 	float top = -(1 + elasticity) * glm::dot((relativeVelocity), normal);
 	float bottom = (glm::dot(normal, normal) * (invMass1 + invMass2));
-	float j = top / bottom;
+	float j = top / bottom;*/
 
-	glm::vec2 force = normal * j;
+	//glm::vec2 force = normal * j;
 
-	object1->applyForceToActor(object2, -force, FORCEMODE::IMPULSE, FORCEMODE::IMPULSE);
+	//object1->applyForceToActor(object2, -force, FORCEMODE::IMPULSE, FORCEMODE::IMPULSE);
 }
 void PhysicsScene::resolveCollision(PhysicsObject * a_object1, PhysicsObject * a_object2)
 {
@@ -188,16 +208,24 @@ void PhysicsScene::resolveCollision(PhysicsObject * a_object1, PhysicsObject * a
 
 	glm::vec2 normal = plane->getNormal();
 	glm::vec2 relativeVelocity = rigid->getVelocity();
+	float elasticity = rigid->getElasticity();
 
-	float elasticity = 1.0f;
+	float j = glm::dot(-(1 + elasticity) * relativeVelocity, normal) / (1 / rigid->getMass());
 
-	float invMass = (!rigid->isStatic()) ? 1.0f / rigid->getMass() : 0.0f;
+	glm::vec2 force = normal * j;
+	glm::vec2 rotationalForce = relativeVelocity * collision.rotationalPercentage;
+	glm::vec2 movementForce = force;/*- (force * collision.rotationalPercentage);*/
+
+	rigid->applyLinearForce(movementForce, FORCEMODE::IMPULSE);//collision.contact - rigid->getPosition()
+	rigid->applyRotationalForce(movementForce * collision.rotationalPercentage, rotationalForce);
+
+	/*float invMass = (!rigid->isStatic()) ? 1.0f / rigid->getMass() : 0.0f;
 	float top = (-(1 + elasticity) * glm::dot((relativeVelocity), normal));
 	float j = top / invMass;
 
 	glm::vec2 force = normal * j;
 
-	rigid->applyForce(force, FORCEMODE::IMPULSE);
+	rigid->applyForce(force, FORCEMODE::IMPULSE);*/
 }
 
 CollisionData PhysicsScene::sphere2Sphere(PhysicsObject* object1, PhysicsObject* object2)
@@ -251,9 +279,19 @@ CollisionData PhysicsScene::sphere2Plane(PhysicsObject* object1, PhysicsObject* 
 		float intersection = sphere->getRadius() - sphereToPlane;
 		if (intersection > 0)
 		{
+			//Claculate Rotation
+			float dot = glm::dot(sphere->getVelocity(), plane->getNormal());
+			float dom = glm::length(sphere->getVelocity()) * glm::length(plane->getNormal());
+			float angleRadians = glm::acos( dot / dom);
+			float angleDegrees = angleRadians * 180 / glm::pi<float>();
+
+			float rotationalPercentage = (angleDegrees - 90.0f) / 100.0f;
+
 			float overlap = -intersection;
 			glm::vec2 normal = plane->getNormal();
-			return CollisionData(true, overlap, normal);			
+			glm::vec2 contact = sphere->getPosition() + (normal * -sphere->getRadius());
+			aie::Gizmos::add2DCircle(contact, 1.0f, 12, { 1.0f, 1.0f, 1.0f, 1.0f });
+			return CollisionData(true, overlap, normal, rotationalPercentage, contact);			
 		}
 	}
 	return CollisionData(false);

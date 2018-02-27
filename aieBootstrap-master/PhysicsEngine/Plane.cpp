@@ -30,4 +30,8 @@ void Plane::makeGizmo()
 	glm::vec4 colour(1, 1, 1, 1);
 
 	aie::Gizmos::add2DLine(start, end, colour);
+
+	glm::vec2 endPoint = centerPoint + (glm::vec2( 2.0f, 2.0f ) * m_normal);
+
+	aie::Gizmos::add2DLine(centerPoint, endPoint, colour);
 }

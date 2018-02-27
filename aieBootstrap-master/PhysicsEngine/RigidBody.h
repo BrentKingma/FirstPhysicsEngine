@@ -2,6 +2,9 @@
 #include "PhysicsObject.h"
 #include <vector>
 
+#define MIN_LINEAR_THERSHOLD 0.1f
+#define MIN_ANGULAR_THERSHOLD 0.01f
+
 enum FORCEMODE
 {
 	CONSTANT,
@@ -18,18 +21,21 @@ public:
 	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
 	virtual void debug();
 
-	void applyForce(glm::vec2 force, FORCEMODE a_mode);
-	void applyForceToActor(RigidBody* actor2, glm::vec2 force, FORCEMODE a_mode_1, FORCEMODE a_mode_2);
+	void applyLinearForce(glm::vec2 force, FORCEMODE a_mode);
+	void applyRotationalForce(glm::vec2 force, glm::vec2 pos = { 0.0f, 0.0f });
 
 	virtual bool checkCollision(PhysicsObject* pOther) = 0;
 
 	glm::vec2 getPosition()					{ return m_position; }
 	glm::vec2 getVelocity()					{ return m_velocity; }
 	glm::vec2 getForce()					{ return m_velocity * m_mass; }
-	glm::vec2 getAngularVelocity()			{ return m_angularVelocity; }
+	glm::vec2 getCentreOfMass()				{ return m_centreOfMass; }
 
+	float getAngularVelocity()				{ return m_angularVelocity; }
 	float getRotation()						{ return m_rotation; }
 	float getMass()							{ return m_mass; }
+	float getElasticity()					{ return m_elasticity; }
+	float getMoment()						{ return m_moment; }
 
 	bool isStatic()							{ return m_static; }
 	
@@ -39,18 +45,22 @@ public:
 	void setPosition(glm::vec2 a_pos)		{ m_position = a_pos; }
 	void addVelocity(glm::vec2 a_velocity)	{ m_velocity += a_velocity; }
 	void setForcemode(FORCEMODE a_mode)		{ forcemode = a_mode; }
+	void setElasticity(float a_elasticity)	{ m_elasticity = a_elasticity; }
 
 protected:
 	glm::vec2 m_position;
 	glm::vec2 m_originalPosition;
 	glm::vec2 m_velocity;
 	glm::vec2 m_acceleration;
-	glm::vec2 m_angularVelocity;
-
+	glm::vec2 m_centreOfMass;
+	
+	float m_angularVelocity;
+	float m_moment;
 	float m_rotation;
 	float m_mass;
 	float m_linearDrag;
 	float m_angularDrag;
+	float m_elasticity;
 
 	bool m_static;
 

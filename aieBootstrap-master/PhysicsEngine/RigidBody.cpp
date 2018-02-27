@@ -10,8 +10,11 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 ,	m_rotation(rotation)
 ,	m_originalPosition(position)
 ,	m_static(a_isStatic)
-,	m_angularVelocity(0.0f, 0.0f)
-,	m_linearDrag(1.0f)
+,	m_angularVelocity(0.0f)
+,	m_linearDrag(0.01f)
+,   m_angularDrag(0.0001f)
+,	m_elasticity(1.0f)
+,	m_moment(0.0f)
 {}
 RigidBody::~RigidBody()
 {
@@ -20,14 +23,28 @@ RigidBody::~RigidBody()
 
 void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
+	if (glm::length(m_velocity) < MIN_LINEAR_THERSHOLD)
+	{
+		m_velocity = glm::vec2{ 0.0f, 0.0f };
+	}
+	if (glm::abs(m_angularVelocity) < MIN_ANGULAR_THERSHOLD)
+	{
+		m_angularVelocity = 0.0f;
+	}
 	if (gravity != glm::vec2(0.0f, 0.0f))
 	{
-		applyForce(gravity * m_mass, FORCEMODE::CONSTANT);
+		applyLinearForce(gravity * m_mass, FORCEMODE::CONSTANT);
 	}
+
 	m_velocity += m_acceleration * timeStep;
-	m_velocity -= m_velocity * m_linearDrag * timeStep;
-	
 	m_position += m_velocity * timeStep;
+
+	m_velocity -= m_velocity * m_linearDrag * timeStep;
+	m_rotation += m_angularVelocity * timeStep;
+	m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep;
+	
+	
+	
 
 	m_acceleration = { 0, 0 };
 }
@@ -36,7 +53,7 @@ void RigidBody::debug()
 	
 }
 
-void RigidBody::applyForce(glm::vec2 force, FORCEMODE a_mode)
+void RigidBody::applyLinearForce(glm::vec2 force, FORCEMODE a_mode)
 {
 	if (!m_static)
 	{
@@ -50,8 +67,10 @@ void RigidBody::applyForce(glm::vec2 force, FORCEMODE a_mode)
 		}
 	}
 }
-void RigidBody::applyForceToActor(RigidBody * actor2, glm::vec2 force, FORCEMODE a_mode_1, FORCEMODE a_mode_2)
+void RigidBody::applyRotationalForce(glm::vec2 force, glm::vec2 pos)
 {
-	applyForce(force, a_mode_1);
-	actor2->applyForce(-force, a_mode_2);
+	if (!m_static)
+	{
+		m_angularVelocity += (force.y * pos.x - force.x * pos.y) / (m_moment);
+	}
 }

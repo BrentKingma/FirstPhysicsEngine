@@ -11,20 +11,26 @@ struct CollisionData
 		:collision(false)
 		,overlap(0.0f)
 		,normal(glm::vec2(0.0f, 0.0f))
+		,contact(glm::vec2(0.0f, 0.0f))
 	{}
-	CollisionData(bool a_collision, float a_overlap, glm::vec2 a_normal)
+	CollisionData(bool a_collision, float a_overlap, glm::vec2 a_normal, float a_rotationalPerc = 0.0f, glm::vec2 a_contact = { 0.0f, 0.0f })
 		:collision(a_collision)
 		,overlap(a_overlap)
 		,normal(a_normal)
+		,contact(a_contact)
+		,rotationalPercentage(a_rotationalPerc)
 	{}
 	CollisionData(bool a_collision)
 		:collision(a_collision)
 		,overlap(0.0f)
 		,normal(glm::vec2(0.0f, 0.0f))
+		,contact(glm::vec2(0.0f, 0.0f))
 	{}
 	bool collision;
 	float overlap;
 	glm::vec2 normal;
+	glm::vec2 contact;
+	float rotationalPercentage;
 };
 
 class PhysicsScene
