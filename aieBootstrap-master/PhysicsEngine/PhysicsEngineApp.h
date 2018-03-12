@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Renderer2D.h"
 #include <glm/glm.hpp>
+#include <imgui.h>
 
 class PhysicsScene;
 class Sphere;
@@ -34,6 +35,7 @@ protected:
 	Plane*				m_plane3;
 
 	Sphere*				m_sphere1;
+	Sphere*				m_sphere2;
 
 	PhysicsScene*		m_physicsScene;
 

@@ -8,7 +8,6 @@ public:
 	~AABB();
 
 	virtual void makeGizmo();
-	virtual bool checkCollision(PhysicsObject* pOther);	
 
 #pragma region Getters
 	glm::vec2 GetExtends()		{ return m_extends; }

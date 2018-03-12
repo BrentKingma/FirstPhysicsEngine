@@ -25,6 +25,8 @@ AABB::AABB(glm::vec2 a_center, glm::vec2 a_extends, glm::vec2 a_velocity, float 
 	m_vertices.push_back(m_Point_2);
 	m_vertices.push_back(m_Point_3);
 	m_vertices.push_back(m_Point_4);	
+
+	m_moment = 1.0f / 12.0f * m_mass * m_extends.x * m_extends.y;
 }
 
 
@@ -35,9 +37,4 @@ AABB::~AABB()
 void AABB::makeGizmo()
 {
 	aie::Gizmos::add2DAABB(m_position, m_extends, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-}
-
-bool AABB::checkCollision(PhysicsObject * pOther)
-{
-	return false;
 }

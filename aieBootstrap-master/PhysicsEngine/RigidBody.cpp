@@ -27,10 +27,10 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 	{
 		m_velocity = glm::vec2{ 0.0f, 0.0f };
 	}
-	if (glm::abs(m_angularVelocity) < MIN_ANGULAR_THERSHOLD)
-	{
-		m_angularVelocity = 0.0f;
-	}
+	//if (glm::abs(m_angularVelocity) < MIN_ANGULAR_THERSHOLD)
+	//{
+	//	m_angularVelocity = 0.0f;
+	//}
 	if (gravity != glm::vec2(0.0f, 0.0f))
 	{
 		applyLinearForce(gravity * m_mass, FORCEMODE::CONSTANT);

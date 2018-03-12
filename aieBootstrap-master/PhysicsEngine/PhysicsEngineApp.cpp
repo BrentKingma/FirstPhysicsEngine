@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+
 #define _USE_MATH_DEFINES
 
 #include <math.h>
@@ -35,21 +36,24 @@ bool PhysicsEngineApp::startup()
 	m_physicsScene->setTimeStep(0.01f);
 	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 
-	m_plane1 = new Plane({ -0.707f,-0.707f }, -40.0f);
-	m_plane2 = new Plane({ 0.707f, -0.707f }, -40.0f);
-	m_plane3 = new Plane({ 0.0f, 1.0f }, -40.0f);
+	m_plane1 = new Plane({ -0.707f, 0.707f }, -40.0f);
+	m_plane2 = new Plane({ 0.707f, 0.707f }, -40.0f);
+	//m_plane3 = new Plane({ 0.0f, 1.0f }, -40.0f);
 
-	m_sphere1 = new Sphere({ -30.0f, 10.0f }, { 20.0f, 0.0f }, 5.0f, 3.0f, { 1.0f, 0.0f, 0.0f, 1.0f }, false);
+	m_sphere1 = new Sphere({ -30.0f, 10.0f }, { 0.0f, 0.0f }, 5.0f, 3.0f, { 1.0f, 0.0f, 0.0f, 1.0f }, false);
+	//m_sphere2 = new Sphere({ -25.0f, -10.0f }, { 0.0f, 0.0f }, 5.0f, 3.0f, { 1.0f, 0.0f, 0.0f, 1.0f }, true);
 
 	// TODO: remember to change this when redistributing a build!
 	// the following path would be used instead: "./font/consolas.ttf"
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
-	m_physicsScene->addActor(m_plane1);
-	m_physicsScene->addActor(m_plane2);
-	m_physicsScene->addActor(m_plane3);
+	//m_physicsScene->addActor(m_plane1);
+	//m_physicsScene->addActor(m_plane2);
+	//m_physicsScene->addActor(m_plane3);
 
 	m_physicsScene->addActor(m_sphere1);
+	m_physicsScene->addActor(m_plane2);
+	m_physicsScene->addActor(m_plane1);
 
 	return true;
 }
@@ -72,6 +76,8 @@ void PhysicsEngineApp::update(float deltaTime)
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
+
+	
 }
 
 void PhysicsEngineApp::draw() 

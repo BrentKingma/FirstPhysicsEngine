@@ -2,8 +2,8 @@
 #include "PhysicsObject.h"
 #include <vector>
 
-#define MIN_LINEAR_THERSHOLD 0.1f
-#define MIN_ANGULAR_THERSHOLD 0.01f
+#define MIN_LINEAR_THERSHOLD 0.01f
+#define MIN_ANGULAR_THERSHOLD 0.001f
 
 enum FORCEMODE
 {
@@ -23,8 +23,6 @@ public:
 
 	void applyLinearForce(glm::vec2 force, FORCEMODE a_mode);
 	void applyRotationalForce(glm::vec2 force, glm::vec2 pos = { 0.0f, 0.0f });
-
-	virtual bool checkCollision(PhysicsObject* pOther) = 0;
 
 	glm::vec2 getPosition()					{ return m_position; }
 	glm::vec2 getVelocity()					{ return m_velocity; }
