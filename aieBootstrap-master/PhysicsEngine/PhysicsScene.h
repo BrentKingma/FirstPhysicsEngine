@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <vector>
+#include <imgui.h>
 
 class PhysicsObject;
 class RigidBody;
@@ -37,18 +38,23 @@ class PhysicsScene
 {
 public:
 	PhysicsScene();
+	PhysicsScene(glm::vec2 a_screenSize);
 	~PhysicsScene();
 
 	void addActor(PhysicsObject* actor);
 	void removeActor(PhysicsObject* actor);
+	void clearActors();
 	void update(float deltaTime);
-	void updateGimozs();
 
 	void setGravity(const glm::vec2 gravity) { m_gravity = gravity;	}
 	glm::vec2 getGravity() const { return m_gravity; }
 
 	void setTimeStep(const float timeStep) { m_timeStep = timeStep; }
 	float getTimeStep() const { return m_timeStep; }
+
+	bool allowedFixedUpdate() { return m_allowedFixedUpdate; }
+
+	void ImGUI();
 
 	static CollisionData plane2Sphere(PhysicsObject* object1, PhysicsObject* object2);
 	static CollisionData plane2AABB(PhysicsObject* object1, PhysicsObject* object2);
@@ -69,8 +75,10 @@ public:
 
 protected:
 	glm::vec2 m_gravity;
+	glm::vec2 m_screenSize;
 	float m_timeStep;
 	std::vector<PhysicsObject*> m_actors;
+	bool m_allowedFixedUpdate = true;
 
 	CollisionData collision;
 };

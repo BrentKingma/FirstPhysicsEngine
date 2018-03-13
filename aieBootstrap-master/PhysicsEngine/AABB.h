@@ -7,7 +7,7 @@ public:
 	AABB(glm::vec2 a_center, glm::vec2 a_extends, glm::vec2 a_velocity, float a_rotation, float a_mass, bool a_isStatic);
 	~AABB();
 
-	virtual void makeGizmo();
+	virtual void debug();
 
 #pragma region Getters
 	glm::vec2 GetExtends()		{ return m_extends; }

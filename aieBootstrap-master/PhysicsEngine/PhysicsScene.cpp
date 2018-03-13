@@ -17,6 +17,13 @@ PhysicsScene::PhysicsScene()
 {
 	
 }
+PhysicsScene::PhysicsScene(glm::vec2 a_screenSize)
+	: m_timeStep(0.01f)
+	, m_gravity(0.0f, -9.8f)
+	, collision(false)
+	, m_screenSize(a_screenSize)
+{
+}
 PhysicsScene::~PhysicsScene()
 {
 	for (auto& actor : m_actors)
@@ -43,6 +50,11 @@ void PhysicsScene::removeActor(PhysicsObject* actor)
 {
 	std::remove(std::begin(m_actors), std::end(m_actors), actor);
 }
+void PhysicsScene::clearActors()
+{
+	m_actors.clear();
+	m_actors.shrink_to_fit();
+}
 void PhysicsScene::update(float deltaTime)
 {
 	static std::list<PhysicsObject*> checkedObjects;
@@ -50,22 +62,23 @@ void PhysicsScene::update(float deltaTime)
 	static float accumulatedTime = 0.0f;
 	accumulatedTime += deltaTime;
 
-	while (accumulatedTime >= m_timeStep)
+	ImGUI();
+	if (m_allowedFixedUpdate)
 	{
-		for (auto pActor : m_actors)
+		while (accumulatedTime >= m_timeStep)
 		{
-			pActor->fixedUpdate(m_gravity, m_timeStep);
-		}
-		accumulatedTime -= m_timeStep;
+			for (auto pActor : m_actors)
+			{
+				pActor->fixedUpdate(m_gravity, m_timeStep);
+			}
+			accumulatedTime -= m_timeStep;
 
-		checkForCollision();
+			checkForCollision();
+		}
 	}
-}
-void PhysicsScene::updateGimozs()
-{
-	for (auto pActor : m_actors)
+	else
 	{
-		pActor->makeGizmo();
+		accumulatedTime = 0.0f;
 	}
 }
 void PhysicsScene::checkForCollision()
@@ -172,8 +185,11 @@ void PhysicsScene::resolveCollision(RigidBody * object1, RigidBody * object2)
 	{
 		float elasticity = (object1->getElasticity() + object2->getElasticity()) / 2.0f;
 
-		float mass1 = 1.0f / (1.0f / object1->getMass() + (r1*r1) / object1->getMoment());
-		float mass2 = 1.0f / (1.0f / object2->getMass() + (r2*r2) / object2->getMoment());
+		float mass1, mass2;
+		if(!object1->isStatic())		mass1 = 1.0f / (1.0f / object1->getMass() + (r1*r1) / object1->getMoment());
+		else if (object1->isStatic())	mass1 = 0.0f;
+		if(!object2->isStatic())		mass2 = 1.0f / (1.0f / object2->getMass() + (r2*r2) / object2->getMoment());
+		else if (object2->isStatic())	mass2 = 0.0f;
 
 		glm::vec2 force = (1.0f + elasticity) * mass1 * mass2 / (mass1 + mass2) * (v1 - v2) * normal;
 
@@ -324,6 +340,16 @@ CollisionData PhysicsScene::sphere2AABB(PhysicsObject* object1, PhysicsObject* o
 		return CollisionData(true, overlap, normal);
 	}
 	return CollisionData(false);
+}
+void PhysicsScene::ImGUI()
+{
+	ImGui::Begin("Physics");
+
+	ImGui::SliderFloat("Time Step", &m_timeStep, 0.0f, 1.0f, "%0.02f", 1.0f);
+	ImGui::Checkbox("Fixed Update", &m_allowedFixedUpdate);
+	ImGui::InputFloat("Gravity Scale", &m_gravity.y);
+
+	ImGui::End();
 }
 CollisionData PhysicsScene::plane2Sphere(PhysicsObject* object1, PhysicsObject* object2)
 {

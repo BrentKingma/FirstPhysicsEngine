@@ -34,6 +34,8 @@ public:
 	float getMass()							{ return m_mass; }
 	float getElasticity()					{ return m_elasticity; }
 	float getMoment()						{ return m_moment; }
+	float* getMassAddress()					{ return &m_mass; }
+	float* getElasticityAddress()			{ return &m_elasticity; }
 
 	bool isStatic()							{ return m_static; }
 	

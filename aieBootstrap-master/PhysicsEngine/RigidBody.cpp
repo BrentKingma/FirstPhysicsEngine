@@ -13,7 +13,7 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 ,	m_angularVelocity(0.0f)
 ,	m_linearDrag(0.01f)
 ,   m_angularDrag(0.0001f)
-,	m_elasticity(1.0f)
+,	m_elasticity(0.7f)
 ,	m_moment(0.0f)
 {}
 RigidBody::~RigidBody()

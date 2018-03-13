@@ -251,10 +251,10 @@ void Renderer2D::drawSprite(Texture * texture,
 	if (height == 0.0f)
 		height = (float)texture->getHeight();
 
-	float tlX = (0.0f - xOrigin) * width;		float tlY = (0.0f - yOrigin) * height;
-	float trX = (1.0f - xOrigin) * width;		float trY = (0.0f - yOrigin) * height;
-	float brX = (1.0f - xOrigin) * width;		float brY = (1.0f - yOrigin) * height;
-	float blX = (0.0f - xOrigin) * width;		float blY = (1.0f - yOrigin) * height;
+	float tlX = (0.0f - xOrigin) * width * 2.0f;		float tlY = (0.0f - yOrigin) * height * 2.0f;
+	float trX = (1.0f - xOrigin) * width * 2.0f;		float trY = (0.0f - yOrigin) * height * 2.0f;
+	float brX = (1.0f - xOrigin) * width * 2.0f;		float brY = (1.0f - yOrigin) * height * 2.0f;
+	float blX = (0.0f - xOrigin) * width * 2.0f;		float blY = (1.0f - yOrigin) * height * 2.0f;
 
 	if (rotation != 0.0f) {
 		float si = glm::sin(rotation); float co = glm::cos(rotation);
@@ -523,8 +523,8 @@ void Renderer2D::drawSpriteTransformed4x4(Texture * texture,
 
 void Renderer2D::drawLine(float x1, float y1, float x2, float y2, float thickness, float depth) {
 
-	float xDiff = x2 - x1;
-	float yDiff = y2 - y1;
+	float xDiff = (x2 - x1) * 0.5f;
+	float yDiff = (y2 - y1) * 0.5f;
 	float len = glm::sqrt(xDiff * xDiff + yDiff * yDiff);
 	float xDir = xDiff / len;
 	float yDir = yDiff / len;
