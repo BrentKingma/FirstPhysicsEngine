@@ -2,9 +2,8 @@
 #include <cmath>
 #include <algorithm>
 Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour, bool a_isStatic)
-	: RigidBody(ShapeType::SPHERE, position, velocity, 0.0f, mass, a_isStatic)
+	: RigidBody(ShapeType::SPHERE, position, velocity, colour, 0.0f, mass, a_isStatic)
 	, m_radius(radius)
-	, m_colour(colour)
 {
 	m_vertex_1.x = m_position.x;
 	m_vertex_1.y = m_position.y;

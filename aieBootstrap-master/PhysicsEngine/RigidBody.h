@@ -15,7 +15,7 @@ class RigidBody : public PhysicsObject
 {
 public:
 	RigidBody() = delete;
-	RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, bool a_isStatic);
+	RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, glm::vec4 color, float rotation, float mass, bool a_isStatic);
 	~RigidBody();
 
 	virtual void fixedUpdate(glm::vec2 gravity, float timeStep);
@@ -28,6 +28,7 @@ public:
 	glm::vec2 getVelocity()					{ return m_velocity; }
 	glm::vec2 getForce()					{ return m_velocity * m_mass; }
 	glm::vec2 getCentreOfMass()				{ return m_centreOfMass; }
+	glm::vec4 getColor()					{ return m_color; }
 
 	float getAngularVelocity()				{ return m_angularVelocity; }
 	float getRotation()						{ return m_rotation; }
@@ -36,6 +37,9 @@ public:
 	float getMoment()						{ return m_moment; }
 	float* getMassAddress()					{ return &m_mass; }
 	float* getElasticityAddress()			{ return &m_elasticity; }
+
+	bool getDelete()						{ return m_delete; }
+	bool* getDeleteAddress()				{ return &m_delete; }
 
 	bool isStatic()							{ return m_static; }
 	
@@ -46,6 +50,7 @@ public:
 	void addVelocity(glm::vec2 a_velocity)	{ m_velocity += a_velocity; }
 	void setForcemode(FORCEMODE a_mode)		{ forcemode = a_mode; }
 	void setElasticity(float a_elasticity)	{ m_elasticity = a_elasticity; }
+	void setColor(glm::vec4 a_color)		{ m_color = a_color; }
 
 protected:
 	glm::vec2 m_position;
@@ -53,6 +58,7 @@ protected:
 	glm::vec2 m_velocity;
 	glm::vec2 m_acceleration;
 	glm::vec2 m_centreOfMass;
+	glm::vec4 m_color;
 	
 	float m_angularVelocity;
 	float m_moment;
@@ -63,6 +69,7 @@ protected:
 	float m_elasticity;
 
 	bool m_static;
+	bool m_delete = false;
 
 	FORCEMODE forcemode;	
 

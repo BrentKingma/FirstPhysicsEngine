@@ -27,11 +27,11 @@ struct CollisionData
 		,normal(glm::vec2(0.0f, 0.0f))
 		,contact(glm::vec2(0.0f, 0.0f))
 	{}
-	bool collision;
-	float overlap;
-	glm::vec2 normal;
-	glm::vec2 contact;
-	float rotationalPercentage;
+	bool		collision;
+	float		overlap;
+	glm::vec2	normal;
+	glm::vec2	contact;
+	float		rotationalPercentage;
 };
 
 class PhysicsScene
@@ -74,11 +74,11 @@ public:
 	void resolveCollision(PhysicsObject* object1, PhysicsObject* object2);
 
 protected:
-	glm::vec2 m_gravity;
-	glm::vec2 m_screenSize;
-	float m_timeStep;
-	std::vector<PhysicsObject*> m_actors;
-	bool m_allowedFixedUpdate = true;
+	glm::vec2						m_gravity;
+	glm::vec2						m_screenSize;
+	float							m_timeStep;
+	std::vector<PhysicsObject*>		m_actors;
+	bool							m_allowedFixedUpdate = true;
 
 	CollisionData collision;
 };

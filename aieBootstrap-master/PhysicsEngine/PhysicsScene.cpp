@@ -345,7 +345,7 @@ void PhysicsScene::ImGUI()
 {
 	ImGui::Begin("Physics");
 
-	ImGui::SliderFloat("Time Step", &m_timeStep, 0.0f, 1.0f, "%0.02f", 1.0f);
+	ImGui::SliderFloat("Time Step", &m_timeStep, 0.01f, 1.0f, "%0.02f", 1.0f);
 	ImGui::Checkbox("Fixed Update", &m_allowedFixedUpdate);
 	ImGui::InputFloat("Gravity Scale", &m_gravity.y);
 
@@ -449,35 +449,35 @@ CollisionData PhysicsScene::AABB2Sphere(PhysicsObject* object1, PhysicsObject* o
 	return sphere2AABB(object1, object2);
 }
 
-bool PhysicsScene::SATCollision(RigidBody * object1, RigidBody * object2)
-{
-	/*std::vector<glm::vec2> shadowAxis;
-	std::vector<glm::vec2> allVerts;
-	if (object1->getShapeType() != ShapeType::SPHERE)
-	{	
-		for (int i = 0; i < object1->getVertices().size - 1; i++)
-		{
-			glm::vec2 vecNormalised = glm::normalize((object1->getVertices()[i + 1] - object1->getVertices()[i]));
-			glm::vec2 vecPerpendicular = glm::vec2(vecNormalised.y, -vecNormalised.x);
-
-			shadowAxis.push_back(vecPerpendicular);
-		}
-	}
-	if (object2->getShapeType() != ShapeType::SPHERE)
-	{
-		for (int i = 0; i < object2->getVertices().size - 1; i++)
-		{
-			glm::vec2 vecNormalised = glm::normalize((object1->getVertices()[i + 1] - object1->getVertices()[i]));
-			glm::vec2 vecPerpendicular = glm::vec2(vecNormalised.y, -vecNormalised.x);
-
-			shadowAxis.push_back(vecPerpendicular);
-		}
-	}
-
-	int totalVerts = object1->getVertices().size + object2->getVertices().size;*/
-
-
-
-
-	return false;
-}
+//bool PhysicsScene::SATCollision(RigidBody * object1, RigidBody * object2)
+//{
+//	/*std::vector<glm::vec2> shadowAxis;
+//	std::vector<glm::vec2> allVerts;
+//	if (object1->getShapeType() != ShapeType::SPHERE)
+//	{	
+//		for (int i = 0; i < object1->getVertices().size - 1; i++)
+//		{
+//			glm::vec2 vecNormalised = glm::normalize((object1->getVertices()[i + 1] - object1->getVertices()[i]));
+//			glm::vec2 vecPerpendicular = glm::vec2(vecNormalised.y, -vecNormalised.x);
+//
+//			shadowAxis.push_back(vecPerpendicular);
+//		}
+//	}
+//	if (object2->getShapeType() != ShapeType::SPHERE)
+//	{
+//		for (int i = 0; i < object2->getVertices().size - 1; i++)
+//		{
+//			glm::vec2 vecNormalised = glm::normalize((object1->getVertices()[i + 1] - object1->getVertices()[i]));
+//			glm::vec2 vecPerpendicular = glm::vec2(vecNormalised.y, -vecNormalised.x);
+//
+//			shadowAxis.push_back(vecPerpendicular);
+//		}
+//	}
+//
+//	int totalVerts = object1->getVertices().size + object2->getVertices().size;*/
+//
+//
+//
+//
+//	return false;
+//}

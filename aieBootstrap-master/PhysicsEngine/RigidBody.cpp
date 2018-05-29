@@ -1,7 +1,7 @@
 #include "RigidBody.h"
 #include <iostream>
 
-RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, float rotation, float mass, bool a_isStatic)
+RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, glm::vec4 a_color, float rotation, float mass, bool a_isStatic)
 :	PhysicsObject(shapeID)
 ,	m_acceleration(0.0f, 0.0f)
 ,	m_position(position)
@@ -15,10 +15,10 @@ RigidBody::RigidBody(ShapeType shapeID, glm::vec2 position, glm::vec2 velocity, 
 ,   m_angularDrag(0.0001f)
 ,	m_elasticity(0.7f)
 ,	m_moment(0.0f)
+,	m_color(a_color)
 {}
 RigidBody::~RigidBody()
 {
-	delete this;
 }
 
 void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
@@ -43,9 +43,6 @@ void RigidBody::fixedUpdate(glm::vec2 gravity, float timeStep)
 	m_rotation += m_angularVelocity * timeStep;
 	m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep;
 	
-	
-	
-
 	m_acceleration = { 0, 0 };
 }
 void RigidBody::debug()

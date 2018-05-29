@@ -19,6 +19,9 @@
     <Filter Include="Source Files\TypeOfShape">
       <UniqueIdentifier>{d415d710-df74-4822-bb4e-bf12ba3e3321}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\QuadTree">
+      <UniqueIdentifier>{730b0efa-03ac-4931-97ee-75ec31f8511d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhysicsEngineApp.cpp">
@@ -64,6 +67,9 @@
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Header Files\TypeOfShape</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadTree.h">
+      <Filter>Header Files\QuadTree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
