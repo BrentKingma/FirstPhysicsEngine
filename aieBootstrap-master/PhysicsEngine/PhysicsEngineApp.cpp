@@ -29,13 +29,11 @@ bool PhysicsEngineApp::startup()
 {
 	aie::Gizmos::create(255U, 255U, 65535U, 65535U);
 
-	m_2dRenderer = new aie::Renderer2D();
+	m_2dRenderer = std::make_unique<aie::Renderer2D>();
 	m_physicsScene = std::make_unique<PhysicsScene>();
 	m_physicsScene->setTimeStep(0.01f);
 	m_physicsScene->setGravity(glm::vec2(0.0f, -98.0f));
 
-	m_quadTree = new QuadTree({ 0, getWindowHeight() }, { getWindowWidth(), 0 });
-	
 	// TODO: remember to change this when redistributing a build!
 	// the following path would be used instead: "./font/consolas.ttf"
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
@@ -324,7 +322,7 @@ void PhysicsEngineApp::draw()
 			m_2dRenderer->drawLine(m_step1ClickPoint.x, m_step1ClickPoint.y, mousePos.x, mousePos.y, 2.0f);
 		}
 	}
-	m_quadTree->draw(m_2dRenderer);
+	
 	// output some text, uses the last used colour
 	m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
 
@@ -496,9 +494,6 @@ void PhysicsEngineApp::CreateSphere()
 	Sphere* tempSphere = new Sphere({ m_input->getMouseX(), m_input->getMouseY() }, { m_newSphereVelocityX, m_newSphereVelocityY }
 										, (m_newSphereKinematic) ? std::numeric_limits<float>::max() : m_newSphereMass
 										, m_newSphereRadius, { 1.0f, 0.0f, 0.0f, 1.0f }, m_newSphereKinematic);
-	//glm::vec2* pos = &tempSphere->getPosition();
-	Node* tempNode = new Node({ m_input->getMouseX(), m_input->getMouseY() });
-	m_quadTree->Insert(tempNode);
 
 	m_spheres.push_back(tempSphere);
 	m_physicsScene->addActor(tempSphere);

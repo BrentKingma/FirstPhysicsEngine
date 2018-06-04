@@ -163,10 +163,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application3D.cpp" />
+    <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application3D.h" />
+    <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="RigidBody.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

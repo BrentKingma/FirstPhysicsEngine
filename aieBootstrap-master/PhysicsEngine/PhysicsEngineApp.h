@@ -7,10 +7,8 @@
 #include <imgui.h>
 #include <vector>
 #include <memory>
-#include "QuadTree.h"
 
 class PhysicsScene;
-class PhysicsObject;
 class Sphere;
 class AABB;
 class Plane;
@@ -36,7 +34,7 @@ public:
 
 protected:
 
-	aie::Renderer2D*					m_2dRenderer;
+	std::unique_ptr<aie::Renderer2D>	m_2dRenderer;
 	aie::Font*							m_font;
 	aie::Input*							m_input;
 	
@@ -46,8 +44,6 @@ protected:
 	std::vector<Sphere*>	m_spheres;
 	std::vector<AABB*>		m_aabbs;
 	std::vector<Plane*>		m_planes;
-
-	QuadTree* m_quadTree;
 
 	glm::vec2 mousePos;
 
